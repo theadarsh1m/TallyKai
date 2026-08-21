@@ -1,0 +1,20 @@
+{
+  "totalOrders": 500,
+  "totalSettlements": 503,
+  "totalGroundTruth": 522,
+  "scenarioDistribution": {
+    "EXACT_MATCH": 180,
+    "FEE_ADJUSTED": 104,
+    "TAX_ADJUSTED": 45,
+    "DATE_DRIFT": 32,
+    "AMOUNT_MISMATCH": 31,
+    "MISSING_SETTLEMENT": 27,
+    "ORPHAN_SETTLEMENT": 22,
+    "DUPLICATE_SETTLEMENT": 12,
+    "PARTIAL_SETTLEMENT": 17,
+    "MERGED_SETTLEMENT": 36,
+    "ROUNDING_DIFFERENCE": 16
+  },
+  "generatedAt": "2026-08-21T06:04:00.780Z",
+  "seed": 42
+}

@@ -1,17 +1,23 @@
 {
-  "name": "reconai",
+  "name": "tallykai",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate:data": "tsx scripts/generate-data.ts",
+    "test:data": "tsx scripts/test-generator.ts",
+    "test": "npm run test:data"
   },
   "dependencies": {
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.33.0",
     "next": "16.3.1",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -21,6 +27,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.1",
     "tailwindcss": "^4",
+    "tsx": "^4.23.12",
     "typescript": "^5"
   }
 }

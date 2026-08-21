@@ -13,7 +13,7 @@ export const Header: React.FC = () => {
           <div>
             <div className="flex items-center space-x-2.5">
               <h1 className="text-xl font-bold tracking-tight text-white font-mono">
-                Recon<span className="text-indigo-400">AI</span>
+                Tallykai<span className="text-indigo-400">.ai</span>
               </h1>
               <span className="px-2 py-0.5 text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700 rounded font-mono">
                 v0.1.0-phase0
