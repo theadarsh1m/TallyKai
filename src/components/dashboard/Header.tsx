@@ -1,54 +1,41 @@
-import React from "react";
-import { ShieldCheck, Activity, Database, Cpu } from "lucide-react";
+import { Cpu } from "lucide-react";
+import { Badge } from "@/components/ui/Badge";
 
 export const Header: React.FC = () => {
   return (
-    <header className="w-full border-b border-slate-800 bg-slate-900/90 backdrop-blur-sm sticky top-0 z-50 px-4 sm:px-6 py-3.5">
+    <header className="w-full border-b border-slate-200 bg-white sticky top-0 z-50 px-4 sm:px-6 py-3">
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         {/* Brand & Subtitle */}
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-indigo-950/80 border border-indigo-700/50 rounded-lg text-indigo-400">
-            <ShieldCheck className="w-6 h-6" />
+          <div className="w-7 h-7 rounded bg-slate-900 text-white flex items-center justify-center font-mono font-bold text-xs">
+            T
           </div>
           <div>
-            <div className="flex items-center space-x-2.5">
-              <h1 className="text-xl font-bold tracking-tight text-white font-mono">
-                Tallykai<span className="text-indigo-400">.ai</span>
+            <div className="flex items-center space-x-2">
+              <h1 className="text-sm font-bold tracking-tight text-slate-900">
+                TARI
               </h1>
-              <span className="px-2 py-0.5 text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700 rounded font-mono">
-                v0.1.0-phase0
+              <span className="px-1.5 py-0.2 text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200 rounded font-mono">
+                v1.0.0
               </span>
             </div>
-            <p className="text-xs text-slate-400 font-medium">
+            <p className="text-xs text-slate-500 font-normal">
               AI Finance Controller & Automated Reconciliation Engine
             </p>
           </div>
         </div>
 
         {/* System Meta & Environment Badge */}
-        <div className="flex flex-wrap items-center gap-3 self-end sm:self-auto text-xs">
-          {/* Engine Status */}
-          <div className="flex items-center space-x-2 px-3 py-1.5 bg-slate-800/80 border border-slate-700/60 rounded-md text-slate-300">
-            <Cpu className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-slate-400">Engine:</span>
-            <span className="font-semibold text-amber-400">Standby (Phase 0)</span>
+        <div className="flex flex-wrap items-center gap-2.5 text-xs">
+          <div className="flex items-center space-x-1.5 px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-md text-slate-700">
+            <Cpu className="w-3.5 h-3.5 text-slate-500" />
+            <span className="text-slate-500">Engine:</span>
+            <span className="font-semibold text-slate-900">Phase 1 Active</span>
           </div>
 
-          {/* Data Source Badge */}
-          <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 bg-slate-800/80 border border-slate-700/60 rounded-md text-slate-300">
-            <Database className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-slate-400">Ledger:</span>
-            <span className="font-medium text-slate-200">Internal Mock</span>
-          </div>
-
-          {/* Demo Environment Badge */}
-          <div className="flex items-center space-x-2 px-3 py-1.5 bg-emerald-950/60 border border-emerald-800/50 rounded-md text-emerald-300">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="font-semibold">Demo Environment</span>
-          </div>
+          <Badge variant="success" dot size="md">
+            Demo Environment
+          </Badge>
         </div>
       </div>
     </header>

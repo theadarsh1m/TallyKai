@@ -1,110 +1,109 @@
 import React from "react";
-import { AlertOctagon, ArrowUpRight, Filter, ShieldAlert } from "lucide-react";
+import { AlertCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export interface ExceptionCategory {
   type: string;
-  cases: number;
-  status: "Unresolved" | "Under Review" | "Resolved";
+  count: number;
   description: string;
   severity: "High" | "Medium" | "Low";
+  status: "Unresolved" | "In Review" | "Resolved";
 }
 
-const dummyExceptions: ExceptionCategory[] = [
+const exceptionsList: ExceptionCategory[] = [
   {
-    type: "Settlement Amount Mismatch",
-    cases: 0,
-    status: "Unresolved",
-    description: "Difference between order final price and bank payout total.",
+    type: "Amount mismatch",
+    count: 31,
+    description: "Difference between order price and gateway net payout.",
     severity: "High",
+    status: "Unresolved",
   },
   {
-    type: "Fee Structure Discrepancy",
-    cases: 0,
-    status: "Under Review",
-    description: "Gateway MDR fee higher than contracted tier schedule.",
+    type: "Missing settlement",
+    count: 27,
+    description: "Order marked paid internally but missing from settlement feed.",
+    severity: "High",
+    status: "Unresolved",
+  },
+  {
+    type: "Orphan settlement",
+    count: 22,
+    description: "Payout record exists with no internal order ledger reference.",
     severity: "Medium",
+    status: "In Review",
   },
   {
-    type: "Missing Bank Settlement Ref",
-    cases: 0,
-    status: "Unresolved",
-    description: "Ledger status paid, but no matching settlement UTR from bank.",
+    type: "Duplicate transaction",
+    count: 12,
+    description: "Single order paid out across multiple settlement batches.",
     severity: "High",
+    status: "Unresolved",
   },
   {
-    type: "Timing / Cut-off Delay",
-    cases: 0,
-    status: "Resolved",
-    description: "Transaction settled past standard T+1 midnight cycle.",
+    type: "Low confidence AI match",
+    count: 22,
+    description: "Match score below 80% threshold awaiting manual audit.",
     severity: "Low",
+    status: "In Review",
   },
 ];
 
 export const ExceptionsPanel: React.FC = () => {
   return (
-    <div className="bg-slate-900/80 border border-slate-800 rounded-xl overflow-hidden shadow-sm flex flex-col justify-between h-full">
+    <div className="bg-white border border-slate-200/90 rounded-lg overflow-hidden flex flex-col justify-between h-full shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
       <div>
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900">
-          <div className="flex items-center space-x-2.5">
-            <div className="p-1.5 bg-rose-950/80 text-rose-400 rounded-lg border border-rose-800/40">
-              <ShieldAlert className="w-4 h-4" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-white tracking-tight">
-                Exception Queue
-              </h2>
-              <p className="text-xs text-slate-400">
-                Categorized Discrepancies & AI Investigation Target List
-              </p>
-            </div>
+        <div className="px-4 py-3 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+              Exceptions Queue
+            </h3>
           </div>
-          <span className="px-2 py-0.5 text-[10px] font-mono font-medium bg-slate-800 text-slate-300 border border-slate-700 rounded">
-            Static Queue
+          <span className="text-[10px] font-mono font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded">
+            114 Flagged
           </span>
         </div>
 
         {/* List of Exceptions */}
-        <div className="p-4 divide-y divide-slate-800/60">
-          {dummyExceptions.map((exc, idx) => {
-            const severityColor = {
-              High: "text-rose-400 bg-rose-950/60 border-rose-900/50",
-              Medium: "text-amber-400 bg-amber-950/60 border-amber-900/50",
-              Low: "text-slate-400 bg-slate-800 border-slate-700",
+        <div className="p-3 divide-y divide-slate-100">
+          {exceptionsList.map((exc, idx) => {
+            const severityTag = {
+              High: "bg-rose-50 text-rose-700 border-rose-200",
+              Medium: "bg-amber-50 text-amber-700 border-amber-200",
+              Low: "bg-slate-100 text-slate-600 border-slate-200",
             }[exc.severity];
 
             return (
               <div
                 key={idx}
-                className="py-3 first:pt-0 last:pb-0 flex items-start justify-between gap-3 group"
+                className="py-2.5 first:pt-1 last:pb-1 flex items-start justify-between gap-3 group"
               >
-                <div className="space-y-1">
+                <div className="space-y-0.5 min-w-0">
                   <div className="flex items-center space-x-2">
-                    <span className="font-semibold text-xs text-slate-200 group-hover:text-indigo-300 transition-colors">
+                    <span className="font-semibold text-xs text-slate-900 group-hover:text-slate-700 transition-colors">
                       {exc.type}
                     </span>
                     <span
-                      className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded border ${severityColor}`}
+                      className={cn(
+                        "text-[9px] font-mono font-medium px-1.5 py-0.2 rounded border",
+                        severityTag
+                      )}
                     >
                       {exc.severity}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 leading-normal">
+                  <p className="text-[11px] text-slate-500 leading-snug">
                     {exc.description}
                   </p>
                 </div>
 
-                <div className="flex flex-col items-end space-y-1 shrink-0">
-                  <div className="flex items-center space-x-1.5">
-                    <span className="font-mono text-sm font-bold text-white">
-                      {exc.cases}
-                    </span>
-                    <span className="text-[10px] text-slate-400 font-medium">
-                      cases
-                    </span>
-                  </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 text-slate-400 border border-slate-800">
-                    {exc.status}
+                <div className="flex flex-col items-end shrink-0 pl-2">
+                  <span className="font-mono text-sm font-bold text-slate-900 tabular-nums">
+                    {exc.count}
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-mono">
+                    cases
                   </span>
                 </div>
               </div>
@@ -113,13 +112,10 @@ export const ExceptionsPanel: React.FC = () => {
         </div>
       </div>
 
-      {/* Panel Action / Info Footer */}
-      <div className="p-3.5 bg-slate-950/80 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-        <div className="flex items-center space-x-1.5 font-mono text-[11px]">
-          <AlertOctagon className="w-3.5 h-3.5 text-amber-400" />
-          <span>AI Exception Agent: Offline (Phase 5)</span>
-        </div>
-        <span className="text-[10px] text-slate-500 font-mono">0 Active Flags</span>
+      {/* Footer Info */}
+      <div className="px-4 py-2.5 bg-slate-50/50 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+        <span>Target for AI Investigation</span>
+        <span className="text-slate-700 font-medium">Phase 5 Queue</span>
       </div>
     </div>
   );

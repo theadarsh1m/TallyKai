@@ -1,141 +1,327 @@
-import React from "react";
-import { Header } from "@/components/dashboard/Header";
+"use client";
+
+import React, { useState } from "react";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { TopBar } from "@/components/layout/TopBar";
 import { KPICard } from "@/components/dashboard/KPICard";
+import { ReconciliationChart } from "@/components/dashboard/ReconciliationChart";
 import { ReconciliationTable } from "@/components/dashboard/ReconciliationTable";
 import { ExceptionsPanel } from "@/components/dashboard/ExceptionsPanel";
+import { DataSourcesPanel } from "@/components/dashboard/DataSourcesPanel";
 import { ActivityTimeline } from "@/components/dashboard/ActivityTimeline";
-import { Info, Layers, Lock, Cpu, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { Layers, Play, Lock, Sliders, Shield } from "lucide-react";
 
 export default function DashboardPage() {
-  return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-between font-sans selection:bg-indigo-600 selection:text-white">
-      <div>
-        {/* Navigation Header */}
-        <Header />
+  const [activeTab, setActiveTab] = useState("overview");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
-        {/* Phase 0 System Announcement Banner */}
-        <div className="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border-b border-indigo-900/40 px-4 py-2.5">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
-            <div className="flex items-center space-x-2 text-indigo-300 font-medium">
-              <Info className="w-4 h-4 text-indigo-400 shrink-0" />
-              <span>
-                <strong className="text-white">Phase 0 Foundation Active:</strong> Dashboard shell and static layout ready. Reconciliation matching algorithms and AI exception agent disabled until Phase 1.
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans selection:bg-emerald-600 selection:text-white">
+      {/* Slim Application Sidebar */}
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      />
+
+      {/* Main Content Layout Wrapper */}
+      <div className="lg:pl-60 flex-1 flex flex-col min-w-0">
+        {/* Compact Top Navigation Bar */}
+        <TopBar
+          onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
+          pageTitle={activeTab}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
+
+        {/* Professional Engine Status Strip */}
+        <div className="bg-white border-b border-slate-200/80 px-4 sm:px-6 py-2 text-xs">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <div className="flex items-center space-x-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+              <span className="text-slate-700 text-xs">
+                <strong className="text-slate-900 font-semibold">Phase 1 Synthetic Engine Active:</strong> 500 internal orders & 503 gateway settlements loaded across 11 noise scenarios.
               </span>
             </div>
-            <div className="flex items-center space-x-2 font-mono text-[11px] text-slate-400">
-              <Lock className="w-3.5 h-3.5 text-slate-500" />
-              <span>No Active LLM Connections</span>
+            <div className="flex items-center space-x-1.5 font-mono text-[11px] text-slate-500">
+              <Lock className="w-3 h-3 text-slate-400" />
+              <span>Ground Truth Data Isolated</span>
             </div>
           </div>
         </div>
 
-        {/* Dashboard Content Container */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-          {/* Section Title & Quick Controls */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h2 className="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                <span>Executive Reconciliation Overview</span>
-              </h2>
-              <p className="text-xs text-slate-400 mt-1">
-                Real-time financial matching telemetry & exception tracking console.
-              </p>
-            </div>
+        {/* Main Dashboard Workspace */}
+        <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6 flex-1">
+          {/* TAB 1: OVERVIEW */}
+          {activeTab === "overview" && (
+            <>
+              {/* Header & Action Toolbar */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-base font-bold text-slate-900 tracking-tight">
+                    Overview
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Monitor reconciliation performance and outstanding exceptions.
+                  </p>
+                </div>
 
-            {/* Simulated Control Buttons (Disabled in Phase 0) */}
-            <div className="flex items-center space-x-2">
-              <button
-                disabled
-                className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700/80 text-slate-400 text-xs font-semibold cursor-not-allowed opacity-75 flex items-center space-x-1.5"
-                title="Disabled in Phase 0"
-              >
-                <Layers className="w-3.5 h-3.5" />
-                <span>Upload Batch</span>
-              </button>
-              <button
-                disabled
-                className="px-3.5 py-1.5 rounded-lg bg-indigo-900/50 border border-indigo-700/50 text-indigo-300 text-xs font-semibold cursor-not-allowed opacity-75 flex items-center space-x-1.5"
-                title="Disabled in Phase 0"
-              >
-                <Cpu className="w-3.5 h-3.5" />
-                <span>Run Reconciliation</span>
-              </button>
-            </div>
-          </div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled
+                    title="Available in Phase 2 ingestion"
+                  >
+                    <Layers className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Upload Batch</span>
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    disabled
+                    title="Engine running on active dataset"
+                  >
+                    <Play className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Run Engine</span>
+                  </Button>
+                </div>
+              </div>
 
-          {/* KPI Summary Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <KPICard
-              title="Records Processed"
-              value="0"
-              subtext="Total transaction records loaded across internal & settlement files."
-              iconName="records"
-              statusTag="Placeholder"
-              variant="default"
-            />
-            <KPICard
-              title="Match Rate"
-              value="0%"
-              subtext="Percentage of internal orders accurately paired with settlement payouts."
-              iconName="rate"
-              statusTag="Placeholder"
-              variant="success"
-            />
-            <KPICard
-              title="Reconciled Amount"
-              value="₹0"
-              subtext="Cumulative monetary sum verified against bank settlement statements."
-              iconName="amount"
-              statusTag="Placeholder"
-              variant="default"
-            />
-            <KPICard
-              title="Exceptions"
-              value="0"
-              subtext="Flagged cases awaiting deterministic rule retry or AI agent investigation."
-              iconName="exceptions"
-              statusTag="Placeholder"
-              variant="warning"
-            />
-          </div>
+              {/* 4 Compact KPI Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                <KPICard
+                  title="Records Processed"
+                  value="1,003"
+                  subtext="500 orders + 503 gateway settlements"
+                  iconName="records"
+                  statusTag="Phase 1 Data"
+                  variant="default"
+                />
+                <KPICard
+                  title="Match Rate"
+                  value="72.2%"
+                  subtext="361 explainable matches identified"
+                  iconName="rate"
+                  statusTag="Clean / Drifting"
+                  variant="success"
+                />
+                <KPICard
+                  title="Reconciled Amount"
+                  value="₹12,48,500"
+                  subtext="Verified payout sum in settlement feed"
+                  iconName="amount"
+                  statusTag="Verified"
+                  variant="default"
+                />
+                <KPICard
+                  title="Exceptions"
+                  value="114"
+                  subtext="Flagged for AI investigation or audit"
+                  iconName="exceptions"
+                  statusTag="Action Needed"
+                  variant="warning"
+                />
+              </div>
 
-          {/* Main Grid: Table & Exceptions Panel */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-            {/* Table (2 Columns wide on Desktop) */}
-            <div className="lg:col-span-2">
+              {/* Reconciliation Telemetry & Breakdown Chart */}
+              <ReconciliationChart />
+
+              {/* Ingestion Data Sources */}
+              <DataSourcesPanel />
+
+              {/* Split Ledger Table & Exceptions Queue */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
+                <div className="lg:col-span-2">
+                  <ReconciliationTable />
+                </div>
+                <div className="lg:col-span-1 h-full">
+                  <ExceptionsPanel />
+                </div>
+              </div>
+
+              {/* Operational Audit Trail */}
+              <ActivityTimeline />
+            </>
+          )}
+
+          {/* TAB 2: RECONCILIATION */}
+          {activeTab === "reconciliation" && (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h2 className="text-base font-bold text-slate-900 tracking-tight">
+                    Reconciliation Ledger
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Detailed transaction ledger matching internal orders to settlement payouts.
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2 text-xs font-mono text-slate-600">
+                  <span className="px-2 py-1 bg-white border border-slate-200 rounded">
+                    361 Matched
+                  </span>
+                  <span className="px-2 py-1 bg-white border border-slate-200 rounded text-rose-700">
+                    114 Exceptions
+                  </span>
+                </div>
+              </div>
               <ReconciliationTable />
             </div>
+          )}
 
-            {/* Exceptions Panel (1 Column wide on Desktop) */}
-            <div className="lg:col-span-1 h-full">
-              <ExceptionsPanel />
+          {/* TAB 3: EXCEPTIONS */}
+          {activeTab === "exceptions" && (
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-base font-bold text-slate-900 tracking-tight">
+                  Exception Management
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Categorized transaction discrepancies awaiting deterministic retry or AI investigation.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <ExceptionsPanel />
+                <div className="bg-white border border-slate-200/90 rounded-lg p-5 flex flex-col justify-between shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                        AI Exception Investigator
+                      </h3>
+                      <Badge variant="warning" size="sm">Phase 5 Queue</Badge>
+                    </div>
+                    <p className="text-xs text-slate-500 mb-4 leading-relaxed">
+                      Autonomous AI Agent investigation pipeline scheduled for Phase 5. The agent will analyze root causes for amount mismatches, missing settlements, and fee discrepancies.
+                    </p>
+                    <div className="p-3 bg-slate-50 border border-slate-200/80 rounded-md text-xs font-mono text-slate-600 space-y-1.5">
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Pipeline Status:</span>
+                        <span className="font-semibold text-slate-800">Offline (Phase 5)</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Target Queue:</span>
+                        <span className="font-semibold text-slate-800">114 Flagged Cases</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Model Inference:</span>
+                        <span className="font-semibold text-slate-800">Disabled</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-5 pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-mono flex items-center justify-between">
+                    <span>TARI AI Infrastructure</span>
+                    <span>Buildathon Track</span>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Activity Timeline Section */}
-          <div>
-            <ActivityTimeline />
-          </div>
+          {/* TAB 4: DATA SOURCES */}
+          {activeTab === "data-sources" && (
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-base font-bold text-slate-900 tracking-tight">
+                  Data Sources & Ingestion
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Manage internal order ledgers and external gateway settlement feeds.
+                </p>
+              </div>
+              <DataSourcesPanel />
+            </div>
+          )}
+
+          {/* TAB 5: AUDIT LOG */}
+          {activeTab === "audit-log" && (
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-base font-bold text-slate-900 tracking-tight">
+                  Audit Activity Trail
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Immutable operational log of reconciliation matching operations.
+                </p>
+              </div>
+              <ActivityTimeline />
+            </div>
+          )}
+
+          {/* TAB 6: SETTINGS */}
+          {activeTab === "settings" && (
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-base font-bold text-slate-900 tracking-tight">
+                  Settings & Configurations
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  System thresholds, gateway MDR fee tiers, and engine parameters.
+                </p>
+              </div>
+              <div className="bg-white border border-slate-200/90 rounded-lg p-5 max-w-2xl space-y-4 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+                <div className="flex items-center space-x-3 pb-3 border-b border-slate-100">
+                  <div className="p-2 rounded-md bg-slate-50 border border-slate-200 text-slate-700">
+                    <Sliders className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                      Reconciliation Matching Thresholds
+                    </h3>
+                    <p className="text-[11px] text-slate-500">
+                      Set tolerance windows and fuzzy matching confidence cutoffs.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2.5 text-xs text-slate-700">
+                  <div className="flex items-center justify-between py-1 border-b border-slate-100/60">
+                    <span className="text-slate-600">Default Date Window Tolerance:</span>
+                    <span className="font-mono font-semibold text-slate-900">T+3 Days</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-slate-100/60">
+                    <span className="text-slate-600">MDR Fee Variance Tolerance:</span>
+                    <span className="font-mono font-semibold text-slate-900">± 2.5%</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-slate-100/60">
+                    <span className="text-slate-600">AI Agent Confidence Threshold:</span>
+                    <span className="font-mono font-semibold text-slate-900">80%</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1">
+                    <span className="text-slate-600">Currency Unit:</span>
+                    <span className="font-mono font-semibold text-slate-900">INR (₹)</span>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-slate-100 flex items-center space-x-2 text-[11px] text-slate-400 font-mono">
+                  <Shield className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Configured for Razorpay AI Buildathon 2026</span>
+                </div>
+              </div>
+            </div>
+          )}
         </main>
-      </div>
 
-      {/* Corporate Finance Footer & Buildathon Disclaimer */}
-      <footer className="w-full border-t border-slate-900 bg-slate-950 py-6 px-4 text-center mt-12">
-        <div className="max-w-7xl mx-auto space-y-2">
-          <div className="flex items-center justify-center space-x-2 text-xs text-slate-400 font-mono">
-            <span className="font-bold text-slate-200">Tallykai</span>
-            <span>•</span>
-            <span>AI Finance Controller</span>
-            <span>•</span>
-            <span className="text-indigo-400 font-semibold">Phase 0 Foundation</span>
+        {/* Corporate Fintech Footer */}
+        <footer className="w-full border-t border-slate-200 bg-white py-3.5 px-4 text-center">
+          <div className="max-w-7xl mx-auto space-y-1">
+            <div className="flex items-center justify-center space-x-2 text-xs text-slate-500 font-mono">
+              <span className="font-bold text-slate-900">TARI</span>
+              <span>•</span>
+              <span>AI Finance Controller</span>
+              <span>•</span>
+              <span className="text-emerald-700 font-medium">Phase 1 Synthetic Engine</span>
+            </div>
+            <p className="text-[11px] text-slate-400 max-w-xl mx-auto">
+              Built for the <strong className="text-slate-600 font-medium">Razorpay AI Buildathon 2026</strong>. Confidential enterprise prototype.
+            </p>
           </div>
-          <p className="text-[11px] text-slate-500 max-w-2xl mx-auto leading-relaxed">
-            This project is a student buildathon project submitted for the{" "}
-            <strong className="text-slate-400">Razorpay AI Buildathon 2026</strong> inspired by the track challenge.
-            It is not an official Razorpay product and does not use proprietary Razorpay brand assets or APIs.
-          </p>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
   );
 }

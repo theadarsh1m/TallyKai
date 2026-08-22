@@ -13,15 +13,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tallykai - AI Finance Controller",
+  title: "TARI — AI Finance Controller",
   description:
-    "AI-powered financial reconciliation engine designed to normalize, match, and resolve multi-source transaction ledgers.",
+    "High-precision AI financial reconciliation engine designed to normalize, match, and resolve multi-source transaction ledgers.",
   keywords: [
-    "Tallykai",
+    "TARI",
     "Razorpay AI Buildathon 2026",
     "Finance Controller",
     "Financial Reconciliation",
     "AI Audit",
+    "FinOps",
   ],
 };
 
@@ -31,9 +32,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-950 text-slate-100 min-h-screen selection:bg-indigo-500 selection:text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-50 text-slate-900 min-h-screen selection:bg-emerald-600 selection:text-white`}
       >
         {children}
       </body>
