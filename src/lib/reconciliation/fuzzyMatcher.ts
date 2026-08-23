@@ -8,7 +8,6 @@
  */
 
 import { CanonicalTransaction } from "../normalization/types";
-import { fromMinorUnits } from "../normalization/money";
 import {
   OrderReconciliationResult,
   FuzzyCandidate,

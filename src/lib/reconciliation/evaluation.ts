@@ -1,11 +1,11 @@
 /**
  * TallyKai — AI Finance Controller
- * Phase 3 & Phase 4: Independent Ground Truth Evaluation Utility
+ * Phase 3, Phase 4 & Phase 5: Independent Ground Truth Evaluation Utility
  * 
- * Compares multi-layer deterministic and fuzzy reconciliation outcomes against Ground Truth
+ * Compares multi-layer deterministic, fuzzy, and AI reconciliation outcomes against Ground Truth
  * to independently benchmark engine accuracy, precision, recall, and false positive rates.
  * 
- * NOTE: This module is strictly decoupled from the core reconciliation engine.
+ * NOTE: This module is strictly decoupled from the core reconciliation engine and AI tools.
  */
 
 import { ReconciliationDatasetResult } from "./types";
@@ -45,6 +45,17 @@ export interface FuzzyEvaluationMetrics {
   fuzzyResolutionRate: number;
 }
 
+export interface AIEvaluationMetrics {
+  investigated: number;
+  proposedMatches: number;
+  correctAIMatches: number;
+  incorrectAIMatches: number;
+  humanReviewDecisions: number;
+  aiPrecision: number;
+  aiResolutionRate: number;
+  aiFallbackRate: number;
+}
+
 export interface EvaluationReport {
   totalEvaluated: number;
   correctClassifications: number;
@@ -59,6 +70,7 @@ export interface EvaluationReport {
   f1Score: number;
   deterministicMetrics: DeterministicEvaluationMetrics;
   fuzzyMetrics: FuzzyEvaluationMetrics;
+  aiMetrics: AIEvaluationMetrics;
   scenarioBreakdown: ScenarioMetric[];
 }
 
@@ -77,17 +89,23 @@ export function evaluateReconciliationAgainstGroundTruth(
   let trueNegatives = 0;
   let falseNegatives = 0;
 
-  // Deterministic layer tracking
+  // Pass 1: Deterministic layer tracking
   let detMatched = 0;
   let detCorrect = 0;
   let detIncorrect = 0;
 
-  // Fuzzy layer tracking
+  // Pass 2: Fuzzy layer tracking
   let fuzzyProposed = 0;
   let fuzzyCorrect = 0;
   let fuzzyIncorrect = 0;
   let fuzzyAmbiguous = 0;
   let fuzzyRejected = 0;
+
+  // Pass 3: AI layer tracking
+  let aiProposed = 0;
+  let aiCorrect = 0;
+  let aiIncorrect = 0;
+  let aiHumanReview = 0;
 
   const scenarioStats = new Map<string, { total: number; correct: number }>();
 
@@ -111,8 +129,17 @@ export function evaluateReconciliationAgainstGroundTruth(
           orderRes.matchMethod === "FUZZY_AMOUNT" ||
           orderRes.matchMethod === "FUZZY_COMBINED";
 
+        const isAIMethod = orderRes.matchMethod === "AI_ASSISTED";
+
         if (engineDecidedMatch) {
-          if (isFuzzyMethod) {
+          if (isAIMethod) {
+            aiProposed++;
+            if (isGtMatchable) {
+              aiCorrect++;
+            } else {
+              aiIncorrect++;
+            }
+          } else if (isFuzzyMethod) {
             fuzzyProposed++;
             if (isGtMatchable) {
               fuzzyCorrect++;
@@ -128,6 +155,9 @@ export function evaluateReconciliationAgainstGroundTruth(
             }
           }
         } else {
+          if (orderRes.status === "HUMAN_REVIEW" || orderRes.aiInvestigation?.decision === "HUMAN_REVIEW") {
+            aiHumanReview++;
+          }
           if (orderRes.status === "AMBIGUOUS" || orderRes.exceptionCategory === "AMBIGUOUS_MATCH") {
             fuzzyAmbiguous++;
           } else if (
@@ -197,6 +227,22 @@ export function evaluateReconciliationAgainstGroundTruth(
       ? parseFloat(((fuzzyProposed / detUnresolved) * 100).toFixed(1))
       : 0.0;
 
+  const aiInvestigated = reconResult.summary.aiInvestigated;
+  const aiPrecision =
+    aiProposed > 0
+      ? parseFloat(((aiCorrect / aiProposed) * 100).toFixed(1))
+      : 100.0;
+
+  const aiResolutionRate =
+    aiInvestigated > 0
+      ? parseFloat(((aiProposed / aiInvestigated) * 100).toFixed(1))
+      : 0.0;
+
+  const aiFallbackRate =
+    aiInvestigated > 0
+      ? parseFloat(((aiHumanReview / aiInvestigated) * 100).toFixed(1))
+      : 0.0;
+
   const deterministicMetrics: DeterministicEvaluationMetrics = {
     matched: detMatched,
     correct: detCorrect,
@@ -213,6 +259,17 @@ export function evaluateReconciliationAgainstGroundTruth(
     rejected: fuzzyRejected,
     fuzzyPrecision,
     fuzzyResolutionRate,
+  };
+
+  const aiMetrics: AIEvaluationMetrics = {
+    investigated: aiInvestigated,
+    proposedMatches: aiProposed,
+    correctAIMatches: aiCorrect,
+    incorrectAIMatches: aiIncorrect,
+    humanReviewDecisions: aiHumanReview,
+    aiPrecision,
+    aiResolutionRate,
+    aiFallbackRate,
   };
 
   const scenarioBreakdown: ScenarioMetric[] = [];
@@ -242,6 +299,7 @@ export function evaluateReconciliationAgainstGroundTruth(
     f1Score,
     deterministicMetrics,
     fuzzyMetrics,
+    aiMetrics,
     scenarioBreakdown,
   };
 }

@@ -1,7 +1,9 @@
 /**
  * TallyKai — AI Finance Controller
- * Phase 3 & Phase 4: Deterministic and Fuzzy Reconciliation Types
+ * Phase 3, Phase 4 & Phase 5: Multi-Layer Reconciliation Types
  */
+
+import { AIInvestigationResult } from "../ai/types";
 
 export type ReconciliationStatus =
   | "MATCHED"
@@ -12,7 +14,8 @@ export type ReconciliationStatus =
   | "PARTIAL_SETTLEMENT"
   | "ORPHAN_SETTLEMENT"
   | "UNRESOLVED"
-  | "AMBIGUOUS";
+  | "AMBIGUOUS"
+  | "HUMAN_REVIEW";
 
 export type MatchMethod =
   | "EXACT_REFERENCE"
@@ -25,6 +28,7 @@ export type MatchMethod =
   | "FUZZY_REFERENCE"
   | "FUZZY_AMOUNT"
   | "FUZZY_COMBINED"
+  | "AI_ASSISTED"
   | "NONE";
 
 export type ExceptionCategory =
@@ -40,6 +44,8 @@ export type ExceptionCategory =
   | "AMBIGUOUS_MATCH"
   | "NO_CANDIDATE"
   | "MULTIPLE_CANDIDATES"
+  | "AI_UNRESOLVED"
+  | "AI_LIMIT_REACHED"
   | "UNKNOWN";
 
 export type EvidenceType =
@@ -54,7 +60,8 @@ export type EvidenceType =
   | "ROUNDING_DIFFERENCE"
   | "MERGED_BATCH"
   | "FUZZY_CANDIDATE_MATCH"
-  | "AMBIGUITY_DETECTION";
+  | "AMBIGUITY_DETECTION"
+  | "AI_INVESTIGATION_RESULT";
 
 export interface FuzzyCandidateEvidence {
   referenceSimilarity: number;
@@ -82,6 +89,7 @@ export interface EvidenceItem {
   description?: string;
   candidateEvidence?: FuzzyCandidateEvidence;
   candidates?: FuzzyCandidate[];
+  aiInvestigation?: AIInvestigationResult;
   [key: string]: unknown;
 }
 
@@ -90,11 +98,11 @@ export interface OrderReconciliationResult {
   orderId: string;
   /** Final reconciliation status */
   status: ReconciliationStatus;
-  /** Exact deterministic or fuzzy match method utilized */
+  /** Exact deterministic, fuzzy, or AI match method utilized */
   matchMethod: MatchMethod;
   /** Linked settlement IDs (empty array if missing) */
   settlementIds: string[];
-  /** Rule/Candidate confidence score (0.0 to 1.0) */
+  /** Rule/Candidate/AI confidence score (0.0 to 1.0) */
   confidence: number;
   /** Monetary variance between expected net and actual settled in minor units (paise) */
   amountDifferenceMinor: number;
@@ -104,8 +112,10 @@ export interface OrderReconciliationResult {
   exceptionCategory: ExceptionCategory | null;
   /** Structured audit trail evidence items */
   evidence: EvidenceItem[];
-  /** Top fuzzy candidate scores and evidence for AI investigation */
+  /** Top fuzzy candidate scores and evidence */
   fuzzyCandidates?: FuzzyCandidate[];
+  /** AI agent investigation payload and audit trail */
+  aiInvestigation?: AIInvestigationResult;
 }
 
 export interface OrphanReconciliationResult {
@@ -136,17 +146,24 @@ export interface ReconciliationSummary {
   orphanSettlements: number;
   unresolved: number;
   exceptions: number;
-  /** Deterministic breakdown */
+  /** Pass 1 Deterministic breakdown */
   deterministicExactMatches: number;
   deterministicAdjustmentMatches: number;
   deterministicUnresolved: number;
   deterministicResolutionRate: number;
-  /** Fuzzy matching breakdown */
+  /** Pass 2 Fuzzy matching breakdown */
   fuzzyHighConfidence: number;
   fuzzyAmbiguous: number;
   fuzzyRejected: number;
   fuzzyPrecision?: number;
   fuzzyResolutionRate?: number;
+  /** Pass 3 AI agent breakdown */
+  aiInvestigated: number;
+  aiResolved: number;
+  aiHumanReview: number;
+  aiPrecision?: number;
+  aiResolutionRate?: number;
+  aiFallbackRate?: number;
   /** Aggregate matched count */
   totalMatched: number;
   /** Execution time in milliseconds */

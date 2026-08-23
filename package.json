@@ -13,7 +13,8 @@
     "test:data": "tsx scripts/test-generator.ts",
     "test:normalization": "tsx scripts/test-normalization.ts",
     "test:reconciliation": "tsx scripts/test-reconciliation.ts",
-    "test": "npm run test:data && npm run test:normalization && npm run test:reconciliation"
+    "test:ai": "tsx scripts/test-ai-agent.ts",
+    "test": "npm run test:data && npm run test:normalization && npm run test:reconciliation && npm run test:ai"
   },
   "dependencies": {
     "clsx": "^2.1.1",

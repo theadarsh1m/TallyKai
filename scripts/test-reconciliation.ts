@@ -8,20 +8,13 @@ import path from "path";
 import { CanonicalTransaction } from "../src/lib/normalization/types";
 import {
   reconcileDataset,
-  evaluateSingleSettlement,
-  evaluateMultipleSettlements,
-  evaluateMissingSettlement,
-  buildSettlementIndex,
-  buildOrderIndex,
   calculateReferenceSimilarity,
   calculateAmountSimilarity,
   calculateDateSimilarity,
   calculateCustomerSimilarity,
-  scoreCandidate,
   evaluateFuzzyOrder,
 } from "../src/lib/reconciliation";
 import {
-  DEFAULT_RECONCILIATION_CONFIG,
   DEFAULT_FUZZY_CONFIG,
 } from "../src/lib/reconciliation/config";
 
@@ -336,7 +329,6 @@ function runTests() {
   // Test 14: Ground truth is not used during matching
   // ----------------------------------------------------
   const reconDir = path.join(process.cwd(), "src", "lib", "reconciliation");
-  const reconFiles = fs.readdirSync(reconDir);
   let groundTruthImportedInCore = false;
 
   const coreReconFiles = [

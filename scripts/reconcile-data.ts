@@ -1,5 +1,5 @@
 /**
- * TallyKai — Deterministic and Fuzzy Reconciliation CLI & Reporting Script
+ * TallyKai — Multi-Layer Reconciliation CLI & Reporting Script
  * Usage:
  *   npx tsx scripts/reconcile-data.ts
  *   npm run reconcile:data
@@ -9,11 +9,11 @@ import fs from "fs";
 import path from "path";
 import { normalizeDataset } from "../src/lib/normalization";
 import {
-  reconcileDataset,
+  reconcileDatasetAsync,
   evaluateReconciliationAgainstGroundTruth,
 } from "../src/lib/reconciliation";
 
-function main() {
+async function main() {
   const dataDir = path.join(process.cwd(), "data", "generated");
   const ordersPath = path.join(dataDir, "orders.json");
   const settlementsPath = path.join(dataDir, "settlements.json");
@@ -26,7 +26,7 @@ function main() {
     process.exit(1);
   }
 
-  console.log("Loading datasets and running multi-layer reconciliation pipeline...\n");
+  console.log("Loading datasets and running 3-pass reconciliation pipeline (Deterministic -> Fuzzy -> AI)...\n");
 
   const rawOrders = JSON.parse(fs.readFileSync(ordersPath, "utf-8"));
   const rawSettlements = JSON.parse(fs.readFileSync(settlementsPath, "utf-8"));
@@ -39,23 +39,30 @@ function main() {
   const orders = normResult.normalizedRecords.filter((r) => r.source === "ORDER_LEDGER");
   const settlements = normResult.normalizedRecords.filter((r) => r.source === "SETTLEMENT");
 
-  // 2. Multi-Layer Reconciliation Engine (Phase 3 & Phase 4)
+  // 2. Multi-Layer Reconciliation Engine (Deterministic + Fuzzy + AI Agent)
   const reconStart = performance.now();
-  const result = reconcileDataset(orders, settlements);
+  const result = await reconcileDatasetAsync(orders, settlements);
   const reconElapsed = (performance.now() - reconStart).toFixed(2);
 
   // 3. Ground Truth Evaluation Benchmark (if available)
-  let fuzzyPrecisionDisplay = "100.0%";
+  let aiPrecisionDisplay = "100.0%";
+  let aiResolutionRateDisplay = "0.0%";
   let evalReport = null;
 
   if (fs.existsSync(groundTruthPath)) {
     const groundTruth = JSON.parse(fs.readFileSync(groundTruthPath, "utf-8"));
     evalReport = evaluateReconciliationAgainstGroundTruth(result, groundTruth);
-    fuzzyPrecisionDisplay = `${evalReport.fuzzyMetrics.fuzzyPrecision}%`;
-    result.summary.fuzzyPrecision = evalReport.fuzzyMetrics.fuzzyPrecision;
+    aiPrecisionDisplay = `${evalReport.aiMetrics.aiPrecision}%`;
+    aiResolutionRateDisplay = `${evalReport.aiMetrics.aiResolutionRate}%`;
+    result.summary.aiPrecision = evalReport.aiMetrics.aiPrecision;
+    result.summary.aiResolutionRate = evalReport.aiMetrics.aiResolutionRate;
+    result.summary.aiFallbackRate = evalReport.aiMetrics.aiFallbackRate;
   }
 
-  // 4. Formatted Terminal Output (Phase 4 Specification)
+  const detResolved =
+    result.summary.deterministicExactMatches + result.summary.deterministicAdjustmentMatches;
+
+  // 4. Formatted Terminal Output (Phase 5 Specification)
   console.log("TALLYKAI RECONCILIATION");
   console.log("=======================\n");
 
@@ -64,24 +71,29 @@ function main() {
   console.log(`Orders:                     ${result.summary.totalOrders}`);
   console.log(`Settlements:                ${result.summary.totalSettlements}\n`);
 
-  console.log("DETERMINISTIC");
-  console.log("-------------");
-  console.log(`Exact matches:              ${result.summary.deterministicExactMatches.toString().padStart(4, " ")}`);
-  console.log(`Adjustment matches:         ${result.summary.deterministicAdjustmentMatches.toString().padStart(4, " ")}`);
-  console.log(`Unresolved after pass 1:    ${result.summary.deterministicUnresolved.toString().padStart(4, " ")}\n`);
+  console.log("PASS 1 — DETERMINISTIC");
+  console.log("----------------------");
+  console.log(`Resolved:                   ${detResolved.toString().padStart(4, " ")}\n`);
 
-  console.log("FUZZY");
-  console.log("-----");
-  console.log(`High confidence:            ${result.summary.fuzzyHighConfidence.toString().padStart(4, " ")}`);
-  console.log(`Ambiguous:                  ${result.summary.fuzzyAmbiguous.toString().padStart(4, " ")}`);
-  console.log(`Rejected:                   ${result.summary.fuzzyRejected.toString().padStart(4, " ")}\n`);
+  console.log("PASS 2 — FUZZY");
+  console.log("--------------");
+  console.log(`Resolved:                   ${result.summary.fuzzyHighConfidence.toString().padStart(4, " ")}`);
+  console.log(`Ambiguous:                  ${result.summary.fuzzyAmbiguous.toString().padStart(4, " ")}\n`);
+
+  console.log("PASS 3 — AI");
+  console.log("-----------");
+  console.log(`Investigated:               ${result.summary.aiInvestigated.toString().padStart(4, " ")}`);
+  console.log(`Resolved:                   ${result.summary.aiResolved.toString().padStart(4, " ")}`);
+  console.log(`Human review:               ${result.summary.aiHumanReview.toString().padStart(4, " ")}\n`);
 
   console.log("FINAL");
   console.log("-----");
   console.log(`Matched:                    ${result.summary.totalMatched.toString().padStart(4, " ")}`);
   console.log(`Exceptions:                 ${result.summary.exceptions.toString().padStart(4, " ")}\n`);
 
-  console.log(`Fuzzy precision:            ${fuzzyPrecisionDisplay}`);
+  console.log(`AI precision:               ${aiPrecisionDisplay}`);
+  console.log(`AI resolution rate:         ${aiResolutionRateDisplay}`);
+  console.log(`AI investigations:          ${result.summary.aiInvestigated}`);
   console.log(`Processing time:            ${reconElapsed} ms`);
   console.log(`Normalization time:         ${normElapsed} ms\n`);
 
@@ -96,7 +108,9 @@ function main() {
     console.log(`F1 Score:                   ${evalReport.f1Score}%`);
     console.log(`Deterministic Precision:    ${evalReport.deterministicMetrics.precision}%`);
     console.log(`Fuzzy Precision:            ${evalReport.fuzzyMetrics.fuzzyPrecision}%`);
-    console.log(`Fuzzy Resolution Rate:      ${evalReport.fuzzyMetrics.fuzzyResolutionRate}%`);
+    console.log(`AI Precision:               ${evalReport.aiMetrics.aiPrecision}%`);
+    console.log(`AI Resolution Rate:         ${evalReport.aiMetrics.aiResolutionRate}%`);
+    console.log(`AI Human Review Rate:       ${evalReport.aiMetrics.aiFallbackRate}%`);
     console.log("--------------------------------------------------");
     console.log("Scenario Breakdown:");
     for (const sc of evalReport.scenarioBreakdown) {

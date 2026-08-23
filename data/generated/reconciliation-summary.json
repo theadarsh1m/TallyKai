@@ -3,11 +3,11 @@
   "totalSettlements": 512,
   "matched": 157,
   "matchedAfterAdjustments": 221,
-  "missingSettlements": 64,
+  "missingSettlements": 4,
   "partialSettlements": 15,
   "duplicates": 14,
   "orphanSettlements": 56,
-  "unresolved": 9,
+  "unresolved": 69,
   "exceptions": 178,
   "deterministicExactMatches": 157,
   "deterministicAdjustmentMatches": 212,
@@ -17,7 +17,12 @@
   "fuzzyAmbiguous": 9,
   "fuzzyRejected": 64,
   "fuzzyResolutionRate": 11,
+  "aiInvestigated": 73,
+  "aiResolved": 0,
+  "aiHumanReview": 73,
+  "aiResolutionRate": 0,
+  "aiFallbackRate": 94.5,
   "totalMatched": 378,
-  "processingTimeMs": 75.35,
-  "fuzzyPrecision": 100
+  "processingTimeMs": 256.71,
+  "aiPrecision": 100
 }

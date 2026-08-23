@@ -44,7 +44,7 @@ export default function DashboardPage() {
             <div className="flex items-center space-x-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
               <span className="text-slate-700 text-xs">
-                <strong className="text-slate-900 font-semibold">Phase 4 Deterministic & Fuzzy Engine Active:</strong> Multi-layer matching pipeline with candidate indexing, confidence scoring, and ambiguity detection active.
+                <strong className="text-slate-900 font-semibold">Phase 5 AI Investigation Pipeline Active:</strong> 3-pass reconciliation (Deterministic → Fuzzy → AI Agent) with read-only tools, schema validation, and audit trails.
               </span>
             </div>
             <div className="flex items-center space-x-1.5 font-mono text-[11px] text-slate-500">
@@ -193,29 +193,33 @@ export default function DashboardPage() {
                       <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                         AI Exception Investigator
                       </h3>
-                      <Badge variant="warning" size="sm">Phase 5 Queue</Badge>
+                      <Badge variant="success" size="sm">Phase 5 Active</Badge>
                     </div>
                     <p className="text-xs text-slate-500 mb-4 leading-relaxed">
-                      Autonomous AI Agent investigation pipeline scheduled for Phase 5. The agent will analyze root causes for amount mismatches, missing settlements, and fee discrepancies.
+                      Autonomous AI Agent investigation pipeline analyzing root causes for unresolved exceptions, candidate ambiguities, and fee/tax discrepancies with strict human review fallback.
                     </p>
                     <div className="p-3 bg-slate-50 border border-slate-200/80 rounded-md text-xs font-mono text-slate-600 space-y-1.5">
                       <div className="flex justify-between">
                         <span className="text-slate-500">Pipeline Status:</span>
-                        <span className="font-semibold text-slate-800">Offline (Phase 5)</span>
+                        <span className="font-semibold text-emerald-700">Online & Active (Pass 3)</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Target Queue:</span>
-                        <span className="font-semibold text-slate-800">114 Flagged Cases</span>
+                        <span className="text-slate-500">Provider Abstraction:</span>
+                        <span className="font-semibold text-slate-800">Gemini / Heuristic Engine</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Model Inference:</span>
-                        <span className="font-semibold text-slate-800">Disabled</span>
+                        <span className="text-slate-500">Read-Only Tools:</span>
+                        <span className="font-semibold text-slate-800">8 Deterministic Tools</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Safety Policy:</span>
+                        <span className="font-semibold text-slate-800">Human Review Fallback</span>
                       </div>
                     </div>
                   </div>
                   <div className="mt-5 pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-mono flex items-center justify-between">
-                    <span>TARI AI Infrastructure</span>
-                    <span>Buildathon Track</span>
+                    <span>TallyKai AI Infrastructure</span>
+                    <span>Razorpay Buildathon 2026</span>
                   </div>
                 </div>
               </div>

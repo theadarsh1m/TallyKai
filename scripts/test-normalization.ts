@@ -14,8 +14,6 @@ import {
   formatCurrency,
   normalizeTimestamp,
   normalizeReference,
-  validateRawOrder,
-  validateRawSettlement,
   mapOrderStatusToCanonical,
   mapSettlementStatusToCanonical,
 } from "../src/lib/normalization";
