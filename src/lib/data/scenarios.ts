@@ -6,14 +6,16 @@ import { ScenarioType } from "./types";
 import { SeededRandom } from "./random";
 
 export const DEFAULT_SCENARIO_PROBABILITIES: Record<ScenarioType, number> = {
-  EXACT_MATCH: 0.35,
-  FEE_ADJUSTED: 0.20,
+  EXACT_MATCH: 0.30,
+  FEE_ADJUSTED: 0.18,
   TAX_ADJUSTED: 0.10,
   DATE_DRIFT: 0.08,
+  FUZZY_REFERENCE: 0.08,
+  AMBIGUOUS_MATCH: 0.04,
   ROUNDING_DIFFERENCE: 0.04,
   AMOUNT_MISMATCH: 0.05,
-  MISSING_SETTLEMENT: 0.05,
-  ORPHAN_SETTLEMENT: 0.04,
+  MISSING_SETTLEMENT: 0.04,
+  ORPHAN_SETTLEMENT: 0.03,
   DUPLICATE_SETTLEMENT: 0.03,
   PARTIAL_SETTLEMENT: 0.03,
   MERGED_SETTLEMENT: 0.03,
@@ -48,7 +50,9 @@ export function getTrueStatus(scenario: ScenarioType): "MATCHABLE" | "EXCEPTION"
     case "ROUNDING_DIFFERENCE":
     case "PARTIAL_SETTLEMENT":
     case "MERGED_SETTLEMENT":
+    case "FUZZY_REFERENCE":
       return "MATCHABLE";
+    case "AMBIGUOUS_MATCH":
     case "AMOUNT_MISMATCH":
     case "MISSING_SETTLEMENT":
     case "ORPHAN_SETTLEMENT":

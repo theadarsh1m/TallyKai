@@ -43,6 +43,8 @@ export function generateDataset(options: GeneratorOptions = {}): DatasetResult {
     PARTIAL_SETTLEMENT: 0,
     MERGED_SETTLEMENT: 0,
     ROUNDING_DIFFERENCE: 0,
+    FUZZY_REFERENCE: 0,
+    AMBIGUOUS_MATCH: 0,
   };
 
   let orderCounter = 1;
@@ -434,6 +436,106 @@ export function generateDataset(options: GeneratorOptions = {}): DatasetResult {
             expectedSettlementIds: [set1.settlement_id, set2.settlement_id],
             expectedSettlementAmount: netAmount,
             expectedResult: `Partial settlements split across ${set1.settlement_id} (${part1} INR) and ${set2.settlement_id} (${part2} INR).`,
+          })
+        );
+        break;
+      }
+
+      case "FUZZY_REFERENCE": {
+        const fee = calculateMdrFee(order.amount, rng);
+        const tax = calculateGstTax(fee);
+        const netAmount = order.amount - fee - tax;
+
+        // Perturb reference: remove hyphen, replace with space, or omit explicit order_id
+        const perturbationType = rng.choice([
+          "NO_HYPHEN",
+          "SPACE_DELIMITER",
+          "OMIT_ORDER_ID_LINK",
+        ]);
+        let fuzzyRef = order.reference;
+        let settlementOrderId: string | null = null;
+
+        if (perturbationType === "NO_HYPHEN") {
+          fuzzyRef = order.reference.replace(/-/g, "");
+          settlementOrderId = order.order_id.replace(/-/g, "");
+        } else if (perturbationType === "SPACE_DELIMITER") {
+          fuzzyRef = order.reference.replace(/-/g, " ");
+          settlementOrderId = null;
+        } else {
+          fuzzyRef = order.reference;
+          settlementOrderId = null;
+        }
+
+        const settlement = createSettlementRecord(
+          settlementCounter++,
+          {
+            reference: fuzzyRef,
+            orderId: settlementOrderId,
+            orderAmount: order.amount,
+            timestamp: order.order_timestamp,
+            fee,
+            tax,
+            settlementAmount: netAmount,
+            daysDelay: rng.choice([0, 1, 2]),
+          },
+          rng
+        );
+        settlements.push(settlement);
+
+        groundTruth.push(
+          createGroundTruthRecord({
+            orderId: order.order_id,
+            scenarioType: "FUZZY_REFERENCE",
+            expectedSettlementIds: [settlement.settlement_id],
+            expectedSettlementAmount: netAmount,
+            expectedResult: `Fuzzy match: Reference '${fuzzyRef}' matches order '${order.reference}' with net payout ${netAmount} INR.`,
+          })
+        );
+        break;
+      }
+
+      case "AMBIGUOUS_MATCH": {
+        const fee = calculateMdrFee(order.amount, rng);
+        const tax = calculateGstTax(fee);
+        const netAmount = order.amount - fee - tax;
+
+        const set1 = createSettlementRecord(
+          settlementCounter++,
+          {
+            reference: `${order.reference.replace(/-/g, "")}A`,
+            orderId: null,
+            orderAmount: order.amount,
+            timestamp: order.order_timestamp,
+            fee,
+            tax,
+            settlementAmount: netAmount,
+            daysDelay: 1,
+          },
+          rng
+        );
+        const set2 = createSettlementRecord(
+          settlementCounter++,
+          {
+            reference: `${order.reference.replace(/-/g, "")}B`,
+            orderId: null,
+            orderAmount: order.amount,
+            timestamp: order.order_timestamp,
+            fee,
+            tax,
+            settlementAmount: netAmount,
+            daysDelay: 1,
+          },
+          rng
+        );
+        settlements.push(set1, set2);
+
+        groundTruth.push(
+          createGroundTruthRecord({
+            orderId: order.order_id,
+            scenarioType: "AMBIGUOUS_MATCH",
+            expectedSettlementIds: [set1.settlement_id, set2.settlement_id],
+            expectedSettlementAmount: netAmount,
+            expectedResult: `Ambiguous match: Multiple settlements (${set1.settlement_id}, ${set2.settlement_id}) present identical confidence.`,
           })
         );
         break;

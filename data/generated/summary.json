@@ -1,20 +1,22 @@
 {
   "totalOrders": 500,
-  "totalSettlements": 503,
-  "totalGroundTruth": 522,
+  "totalSettlements": 512,
+  "totalGroundTruth": 512,
   "scenarioDistribution": {
-    "EXACT_MATCH": 180,
-    "FEE_ADJUSTED": 104,
-    "TAX_ADJUSTED": 45,
-    "DATE_DRIFT": 32,
-    "AMOUNT_MISMATCH": 31,
-    "MISSING_SETTLEMENT": 27,
-    "ORPHAN_SETTLEMENT": 22,
-    "DUPLICATE_SETTLEMENT": 12,
-    "PARTIAL_SETTLEMENT": 17,
-    "MERGED_SETTLEMENT": 36,
-    "ROUNDING_DIFFERENCE": 16
+    "EXACT_MATCH": 157,
+    "FEE_ADJUSTED": 93,
+    "TAX_ADJUSTED": 43,
+    "DATE_DRIFT": 40,
+    "AMOUNT_MISMATCH": 22,
+    "MISSING_SETTLEMENT": 24,
+    "ORPHAN_SETTLEMENT": 12,
+    "DUPLICATE_SETTLEMENT": 14,
+    "PARTIAL_SETTLEMENT": 15,
+    "MERGED_SETTLEMENT": 35,
+    "ROUNDING_DIFFERENCE": 15,
+    "FUZZY_REFERENCE": 25,
+    "AMBIGUOUS_MATCH": 17
   },
-  "generatedAt": "2026-08-23T07:28:58.525Z",
+  "generatedAt": "2026-08-23T12:43:10.553Z",
   "seed": 42
 }

@@ -1,16 +1,16 @@
 {
   "statistics": {
-    "total": 1003,
-    "normalized": 1003,
+    "total": 1012,
+    "normalized": 1012,
     "failed": 0,
     "ordersTotal": 500,
     "ordersNormalized": 500,
     "ordersFailed": 0,
-    "settlementsTotal": 503,
-    "settlementsNormalized": 503,
+    "settlementsTotal": 512,
+    "settlementsNormalized": 512,
     "settlementsFailed": 0
   },
   "errors": [],
-  "normalizedAt": "2026-08-23T07:29:02.532Z",
-  "processingTimeMs": 20.62
+  "normalizedAt": "2026-08-23T12:43:12.117Z",
+  "processingTimeMs": 25.3
 }

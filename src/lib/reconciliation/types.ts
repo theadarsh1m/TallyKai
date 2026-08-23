@@ -1,6 +1,6 @@
 /**
  * TallyKai — AI Finance Controller
- * Phase 3: Deterministic Reconciliation Types
+ * Phase 3 & Phase 4: Deterministic and Fuzzy Reconciliation Types
  */
 
 export type ReconciliationStatus =
@@ -11,7 +11,8 @@ export type ReconciliationStatus =
   | "DUPLICATE"
   | "PARTIAL_SETTLEMENT"
   | "ORPHAN_SETTLEMENT"
-  | "UNRESOLVED";
+  | "UNRESOLVED"
+  | "AMBIGUOUS";
 
 export type MatchMethod =
   | "EXACT_REFERENCE"
@@ -21,6 +22,9 @@ export type MatchMethod =
   | "PARTIAL_SETTLEMENT"
   | "ROUNDING_TOLERANCE"
   | "MERGED_BATCH"
+  | "FUZZY_REFERENCE"
+  | "FUZZY_AMOUNT"
+  | "FUZZY_COMBINED"
   | "NONE";
 
 export type ExceptionCategory =
@@ -32,6 +36,10 @@ export type ExceptionCategory =
   | "PARTIAL_SETTLEMENT_MISMATCH"
   | "MERGED_BATCH_MISMATCH"
   | "LOW_EVIDENCE"
+  | "FUZZY_LOW_CONFIDENCE"
+  | "AMBIGUOUS_MATCH"
+  | "NO_CANDIDATE"
+  | "MULTIPLE_CANDIDATES"
   | "UNKNOWN";
 
 export type EvidenceType =
@@ -44,11 +52,36 @@ export type EvidenceType =
   | "MULTIPLE_SETTLEMENTS"
   | "MISSING_RECORD"
   | "ROUNDING_DIFFERENCE"
-  | "MERGED_BATCH";
+  | "MERGED_BATCH"
+  | "FUZZY_CANDIDATE_MATCH"
+  | "AMBIGUITY_DETECTION";
+
+export interface FuzzyCandidateEvidence {
+  referenceSimilarity: number;
+  amountSimilarity: number;
+  dateSimilarity: number;
+  customerSimilarity: number;
+  compositeScore?: number;
+  orderReference?: string | null;
+  settlementReference?: string | null;
+  orderAmountMinor?: number;
+  settlementAmountMinor?: number;
+  delayDays?: number;
+  customerOverlap?: boolean | null;
+  [key: string]: unknown;
+}
+
+export interface FuzzyCandidate {
+  settlementId: string;
+  score: number;
+  evidence: FuzzyCandidateEvidence;
+}
 
 export interface EvidenceItem {
   type: EvidenceType;
   description?: string;
+  candidateEvidence?: FuzzyCandidateEvidence;
+  candidates?: FuzzyCandidate[];
   [key: string]: unknown;
 }
 
@@ -57,20 +90,22 @@ export interface OrderReconciliationResult {
   orderId: string;
   /** Final reconciliation status */
   status: ReconciliationStatus;
-  /** Exact deterministic match method utilized */
+  /** Exact deterministic or fuzzy match method utilized */
   matchMethod: MatchMethod;
   /** Linked settlement IDs (empty array if missing) */
   settlementIds: string[];
-  /** Deterministic rule confidence score (0.0 to 1.0) */
+  /** Rule/Candidate confidence score (0.0 to 1.0) */
   confidence: number;
   /** Monetary variance between expected net and actual settled in minor units (paise) */
   amountDifferenceMinor: number;
   /** Human-readable explanation of the reconciliation outcome */
   reason: string;
-  /** Structured exception classification (if status is EXCEPTION / MISSING / DUPLICATE) */
+  /** Structured exception classification */
   exceptionCategory: ExceptionCategory | null;
   /** Structured audit trail evidence items */
   evidence: EvidenceItem[];
+  /** Top fuzzy candidate scores and evidence for AI investigation */
+  fuzzyCandidates?: FuzzyCandidate[];
 }
 
 export interface OrphanReconciliationResult {
@@ -101,8 +136,19 @@ export interface ReconciliationSummary {
   orphanSettlements: number;
   unresolved: number;
   exceptions: number;
-  /** Percentage of records successfully resolved deterministically */
+  /** Deterministic breakdown */
+  deterministicExactMatches: number;
+  deterministicAdjustmentMatches: number;
+  deterministicUnresolved: number;
   deterministicResolutionRate: number;
+  /** Fuzzy matching breakdown */
+  fuzzyHighConfidence: number;
+  fuzzyAmbiguous: number;
+  fuzzyRejected: number;
+  fuzzyPrecision?: number;
+  fuzzyResolutionRate?: number;
+  /** Aggregate matched count */
+  totalMatched: number;
   /** Execution time in milliseconds */
   processingTimeMs: number;
 }

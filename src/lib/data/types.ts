@@ -1,6 +1,6 @@
 /**
  * Tallykai — AI Finance Controller
- * Phase 1: Synthetic Data Engine Types
+ * Phase 1 & Phase 4: Synthetic Data Engine Types
  */
 
 export type ScenarioType =
@@ -14,7 +14,9 @@ export type ScenarioType =
   | "DUPLICATE_SETTLEMENT"
   | "PARTIAL_SETTLEMENT"
   | "MERGED_SETTLEMENT"
-  | "ROUNDING_DIFFERENCE";
+  | "ROUNDING_DIFFERENCE"
+  | "FUZZY_REFERENCE"
+  | "AMBIGUOUS_MATCH";
 
 export type PaymentMethod = "UPI" | "Card" | "Net Banking" | "Wallet";
 

@@ -10,8 +10,22 @@ export interface ReconciliationRecord {
   reference: string;
   orderAmount: string;
   settlementAmount: string;
-  matchMethod: "Deterministic" | "Fee / Tax" | "Date Offset" | "AI Agent" | "Unresolved";
-  status: "Matched" | "Resolved" | "Review" | "Mismatch" | "Missing" | "Duplicate";
+  matchMethod:
+    | "Deterministic"
+    | "Fee / Tax"
+    | "Fuzzy Ref"
+    | "Fuzzy Amount"
+    | "Fuzzy Combined"
+    | "AI Agent"
+    | "Unresolved";
+  status:
+    | "Matched"
+    | "Resolved"
+    | "Review"
+    | "Ambiguous"
+    | "Mismatch"
+    | "Missing"
+    | "Duplicate";
   confidence: number;
   timestamp: string;
 }
@@ -31,30 +45,30 @@ const defaultRecords: ReconciliationRecord[] = [
     orderId: "ORD-000002",
     reference: "WEB-L4Y5J",
     orderAmount: "₹5,200.00",
-    settlementAmount: "₹5,020.00",
-    matchMethod: "AI Agent",
-    status: "Resolved",
-    confidence: 94,
+    settlementAmount: "₹5,070.00",
+    matchMethod: "Fuzzy Combined",
+    status: "Matched",
+    confidence: 96,
     timestamp: "2026-08-05 02:10",
   },
   {
     orderId: "ORD-000003",
     reference: "WEB-K9P2X",
     orderAmount: "₹8,000.00",
-    settlementAmount: "₹7,100.00",
+    settlementAmount: "₹7,800.00",
     matchMethod: "Unresolved",
-    status: "Review",
-    confidence: 61,
+    status: "Ambiguous",
+    confidence: 88,
     timestamp: "2026-08-05 03:15",
   },
   {
     orderId: "ORD-000004",
     reference: "WEB-M3R7T",
     orderAmount: "₹4,999.00",
-    settlementAmount: "₹4,899.00",
-    matchMethod: "Date Offset",
+    settlementAmount: "₹4,874.00",
+    matchMethod: "Fuzzy Ref",
     status: "Matched",
-    confidence: 95,
+    confidence: 94,
     timestamp: "2026-08-05 04:30",
   },
   {
@@ -111,8 +125,10 @@ export const ReconciliationTable: React.FC = () => {
     const matchesStatus =
       statusFilter === "ALL" ||
       (statusFilter === "MATCHED" && (rec.status === "Matched" || rec.status === "Resolved")) ||
-      (statusFilter === "REVIEW" && rec.status === "Review") ||
-      (statusFilter === "EXCEPTION" && (rec.status === "Mismatch" || rec.status === "Missing" || rec.status === "Duplicate"));
+      (statusFilter === "AMBIGUOUS" && rec.status === "Ambiguous") ||
+      (statusFilter === "REVIEW" && (rec.status === "Review" || rec.status === "Ambiguous")) ||
+      (statusFilter === "EXCEPTION" &&
+        (rec.status === "Mismatch" || rec.status === "Missing" || rec.status === "Duplicate" || rec.status === "Ambiguous"));
 
     return matchesSearch && matchesStatus;
   });
@@ -141,7 +157,8 @@ export const ReconciliationTable: React.FC = () => {
             >
               <option value="ALL">All Records</option>
               <option value="MATCHED">Matched & Resolved</option>
-              <option value="REVIEW">Human Review Needed</option>
+              <option value="AMBIGUOUS">Ambiguous / AI Queue</option>
+              <option value="REVIEW">Review Needed</option>
               <option value="EXCEPTION">Exceptions Only</option>
             </select>
             <Filter className="w-3 h-3 text-slate-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -192,8 +209,12 @@ export const ReconciliationTable: React.FC = () => {
             ) : (
               filteredRecords.map((record) => {
                 const isMatched = record.status === "Matched" || record.status === "Resolved";
+                const isAmbiguous = record.status === "Ambiguous";
                 const isReview = record.status === "Review";
-                const isException = record.status === "Mismatch" || record.status === "Missing" || record.status === "Duplicate";
+                const isException =
+                  record.status === "Mismatch" ||
+                  record.status === "Missing" ||
+                  record.status === "Duplicate";
 
                 return (
                   <tr
@@ -229,7 +250,14 @@ export const ReconciliationTable: React.FC = () => {
                       {record.matchMethod === "Unresolved" ? (
                         <span className="text-slate-400 font-mono text-[11px]">—</span>
                       ) : (
-                        <span className="inline-block px-1.5 py-0.5 text-[10px] font-mono text-slate-600 bg-slate-100/90 rounded border border-slate-200">
+                        <span
+                          className={cn(
+                            "inline-block px-1.5 py-0.5 text-[10px] font-mono rounded border",
+                            record.matchMethod.startsWith("Fuzzy")
+                              ? "text-indigo-700 bg-indigo-50 border-indigo-200"
+                              : "text-slate-600 bg-slate-100/90 border-slate-200"
+                          )}
+                        >
                           {record.matchMethod}
                         </span>
                       )}
@@ -242,7 +270,8 @@ export const ReconciliationTable: React.FC = () => {
                           className={cn(
                             "w-1.5 h-1.5 rounded-full shrink-0",
                             isMatched && "bg-emerald-600",
-                            isReview && "bg-amber-500",
+                            isAmbiguous && "bg-amber-500",
+                            isReview && "bg-blue-500",
                             isException && "bg-rose-600"
                           )}
                         />
@@ -250,11 +279,12 @@ export const ReconciliationTable: React.FC = () => {
                           className={cn(
                             "text-xs font-medium",
                             isMatched && "text-emerald-800",
-                            isReview && "text-amber-800",
+                            isAmbiguous && "text-amber-800",
+                            isReview && "text-blue-800",
                             isException && "text-rose-800"
                           )}
                         >
-                          {record.status}
+                          {isAmbiguous ? "Needs AI Investigation" : record.status}
                         </span>
                       </div>
                     </td>
@@ -266,7 +296,7 @@ export const ReconciliationTable: React.FC = () => {
                           "text-xs font-semibold",
                           record.confidence >= 90
                             ? "text-slate-900"
-                            : record.confidence >= 60
+                            : record.confidence >= 75
                             ? "text-amber-700"
                             : "text-rose-700"
                         )}
