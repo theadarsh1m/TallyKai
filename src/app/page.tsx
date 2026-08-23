@@ -44,7 +44,7 @@ export default function DashboardPage() {
             <div className="flex items-center space-x-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
               <span className="text-slate-700 text-xs">
-                <strong className="text-slate-900 font-semibold">Phase 1 Synthetic Engine Active:</strong> 500 internal orders & 503 gateway settlements loaded across 11 noise scenarios.
+                <strong className="text-slate-900 font-semibold">Phase 2 Canonical Normalization Active:</strong> 1,003 / 1,003 records normalized (500 orders + 503 settlements, 100% data quality).
               </span>
             </div>
             <div className="flex items-center space-x-1.5 font-mono text-[11px] text-slate-500">

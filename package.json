@@ -8,8 +8,10 @@
     "start": "next start",
     "lint": "eslint",
     "generate:data": "tsx scripts/generate-data.ts",
+    "normalize:data": "tsx scripts/normalize-data.ts",
     "test:data": "tsx scripts/test-generator.ts",
-    "test": "npm run test:data"
+    "test:normalization": "tsx scripts/test-normalization.ts",
+    "test": "npm run test:data && npm run test:normalization"
   },
   "dependencies": {
     "clsx": "^2.1.1",
