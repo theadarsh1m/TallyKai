@@ -44,7 +44,7 @@ export default function DashboardPage() {
             <div className="flex items-center space-x-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
               <span className="text-slate-700 text-xs">
-                <strong className="text-slate-900 font-semibold">Phase 2 Canonical Normalization Active:</strong> 1,003 / 1,003 records normalized (500 orders + 503 settlements, 100% data quality).
+                <strong className="text-slate-900 font-semibold">Phase 3 Deterministic Engine Active:</strong> 394 / 500 orders matched (78.8% deterministic resolution rate, 100% precision, 0 false positives).
               </span>
             </div>
             <div className="flex items-center space-x-1.5 font-mono text-[11px] text-slate-500">

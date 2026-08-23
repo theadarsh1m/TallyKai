@@ -9,9 +9,11 @@
     "lint": "eslint",
     "generate:data": "tsx scripts/generate-data.ts",
     "normalize:data": "tsx scripts/normalize-data.ts",
+    "reconcile:data": "tsx scripts/reconcile-data.ts",
     "test:data": "tsx scripts/test-generator.ts",
     "test:normalization": "tsx scripts/test-normalization.ts",
-    "test": "npm run test:data && npm run test:normalization"
+    "test:reconciliation": "tsx scripts/test-reconciliation.ts",
+    "test": "npm run test:data && npm run test:normalization && npm run test:reconciliation"
   },
   "dependencies": {
     "clsx": "^2.1.1",

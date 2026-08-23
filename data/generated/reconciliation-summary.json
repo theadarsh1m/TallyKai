@@ -1,0 +1,14 @@
+{
+  "totalOrders": 500,
+  "totalSettlements": 503,
+  "matched": 180,
+  "matchedAfterAdjustments": 214,
+  "missingSettlements": 48,
+  "partialSettlements": 17,
+  "duplicates": 12,
+  "orphanSettlements": 22,
+  "unresolved": 0,
+  "exceptions": 128,
+  "deterministicResolutionRate": 78.8,
+  "processingTimeMs": 8.15
+}
