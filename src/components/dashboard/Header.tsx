@@ -13,7 +13,7 @@ export const Header: React.FC = () => {
           <div>
             <div className="flex items-center space-x-2">
               <h1 className="text-sm font-bold tracking-tight text-slate-900">
-                TARI
+                TallyKai
               </h1>
               <span className="px-1.5 py-0.2 text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200 rounded font-mono">
                 v1.0.0

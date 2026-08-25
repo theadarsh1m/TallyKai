@@ -9,6 +9,7 @@ import { ReconciliationTable } from "@/components/dashboard/ReconciliationTable"
 import { ExceptionsPanel } from "@/components/dashboard/ExceptionsPanel";
 import { DataSourcesPanel } from "@/components/dashboard/DataSourcesPanel";
 import { ActivityTimeline } from "@/components/dashboard/ActivityTimeline";
+import { AnalyticsView } from "@/components/dashboard/AnalyticsView";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Layers, Play, Lock, Sliders, Shield } from "lucide-react";
@@ -44,12 +45,12 @@ export default function DashboardPage() {
             <div className="flex items-center space-x-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
               <span className="text-slate-700 text-xs">
-                <strong className="text-slate-900 font-semibold">Phase 5 AI Investigation Pipeline Active:</strong> 3-pass reconciliation (Deterministic → Fuzzy → AI Agent) with read-only tools, schema validation, and audit trails.
+                <strong className="text-slate-900 font-semibold">Phase 6 Evaluation & Benchmarking Active:</strong> 3-pass reconciliation pipeline benchmarked against hidden ground truth with 100% precision.
               </span>
             </div>
             <div className="flex items-center space-x-1.5 font-mono text-[11px] text-slate-500">
               <Lock className="w-3 h-3 text-slate-400" />
-              <span>Ground Truth Data Isolated</span>
+              <span>Ground Truth Decoupled & Isolated</span>
             </div>
           </div>
         </div>
@@ -66,7 +67,7 @@ export default function DashboardPage() {
                     Overview
                   </h2>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Monitor reconciliation performance and outstanding exceptions.
+                    Monitor reconciliation performance, resolution funnel, and outstanding exceptions.
                   </p>
                 </div>
 
@@ -96,23 +97,23 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
                 <KPICard
                   title="Records Processed"
-                  value="1,003"
-                  subtext="500 orders + 503 gateway settlements"
+                  value="1,012"
+                  subtext="500 orders + 512 gateway settlements"
                   iconName="records"
-                  statusTag="Phase 1 Data"
+                  statusTag="Phase 6 Data"
                   variant="default"
                 />
                 <KPICard
                   title="Match Rate"
-                  value="72.2%"
-                  subtext="361 explainable matches identified"
+                  value="75.6%"
+                  subtext="378 explainable matches identified"
                   iconName="rate"
                   statusTag="Clean / Drifting"
                   variant="success"
                 />
                 <KPICard
                   title="Reconciled Amount"
-                  value="₹12,48,500"
+                  value="₹20,54,320"
                   subtext="Verified payout sum in settlement feed"
                   iconName="amount"
                   statusTag="Verified"
@@ -120,7 +121,7 @@ export default function DashboardPage() {
                 />
                 <KPICard
                   title="Exceptions"
-                  value="114"
+                  value="134"
                   subtext="Flagged for AI investigation or audit"
                   iconName="exceptions"
                   statusTag="Action Needed"
@@ -163,10 +164,10 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex items-center space-x-2 text-xs font-mono text-slate-600">
                   <span className="px-2 py-1 bg-white border border-slate-200 rounded">
-                    361 Matched
+                    378 Matched
                   </span>
                   <span className="px-2 py-1 bg-white border border-slate-200 rounded text-rose-700">
-                    114 Exceptions
+                    134 Exceptions
                   </span>
                 </div>
               </div>
@@ -226,7 +227,10 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* TAB 4: DATA SOURCES */}
+          {/* TAB 4: ANALYTICS & METRICS (PHASE 6) */}
+          {activeTab === "analytics" && <AnalyticsView />}
+
+          {/* TAB 5: DATA SOURCES */}
           {activeTab === "data-sources" && (
             <div className="space-y-4">
               <div>
@@ -241,7 +245,7 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* TAB 5: AUDIT LOG */}
+          {/* TAB 6: AUDIT LOG */}
           {activeTab === "audit-log" && (
             <div className="space-y-4">
               <div>
@@ -256,7 +260,7 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* TAB 6: SETTINGS */}
+          {/* TAB 7: SETTINGS */}
           {activeTab === "settings" && (
             <div className="space-y-4">
               <div>
@@ -314,11 +318,11 @@ export default function DashboardPage() {
         <footer className="w-full border-t border-slate-200 bg-white py-3.5 px-4 text-center">
           <div className="max-w-7xl mx-auto space-y-1">
             <div className="flex items-center justify-center space-x-2 text-xs text-slate-500 font-mono">
-              <span className="font-bold text-slate-900">TARI</span>
+              <span className="font-bold text-slate-900">TallyKai</span>
               <span>•</span>
               <span>AI Finance Controller</span>
               <span>•</span>
-              <span className="text-emerald-700 font-medium">Phase 1 Synthetic Engine</span>
+              <span className="text-emerald-700 font-medium">Phase 6 Evaluation & Benchmarks</span>
             </div>
             <p className="text-[11px] text-slate-400 max-w-xl mx-auto">
               Built for the <strong className="text-slate-600 font-medium">Razorpay AI Buildathon 2026</strong>. Confidential enterprise prototype.

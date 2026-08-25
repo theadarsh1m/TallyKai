@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   TableProperties,
   AlertCircle,
+  BarChart3,
   Database,
   History,
   Settings,
@@ -29,6 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "reconciliation", label: "Reconciliation", icon: TableProperties },
     { id: "exceptions", label: "Exceptions", icon: AlertCircle, badge: "114" },
+    { id: "analytics", label: "Analytics & Metrics", icon: BarChart3 },
     { id: "data-sources", label: "Data Sources", icon: Database },
     { id: "audit-log", label: "Audit Log", icon: History },
   ];
@@ -59,7 +61,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
               <div className="leading-tight">
                 <span className="font-bold text-slate-900 tracking-tight text-xs block">
-                  TARI
+                  TallyKai
                 </span>
                 <span className="text-[10px] text-slate-500 font-medium block">
                   AI Finance Controller

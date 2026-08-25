@@ -30,6 +30,7 @@ export interface ReconciliationRecord {
     | "Duplicate";
   confidence: number;
   timestamp: string;
+  exceptionCategory?: string;
   aiExplanation?: string;
   aiDecision?: "MATCH" | "EXCEPTION" | "HUMAN_REVIEW";
   aiConfidence?: number;
@@ -48,8 +49,9 @@ const defaultRecords: ReconciliationRecord[] = [
     status: "Matched",
     confidence: 100,
     timestamp: "2026-08-05 01:46",
-    aiExplanation: "Exact reference match verified in deterministic Pass 1.",
+    exceptionCategory: "—",
     aiDecision: "MATCH",
+    aiExplanation: "Exact reference match verified in deterministic Pass 1.",
     aiConfidence: 100,
     recommendedAction: "No action required.",
   },
@@ -62,6 +64,7 @@ const defaultRecords: ReconciliationRecord[] = [
     status: "Matched",
     confidence: 96,
     timestamp: "2026-08-05 02:10",
+    exceptionCategory: "—",
     aiExplanation: "Settlement SET-000412 matches order gross minus standard 2% MDR fee and 18% GST tax deduction.",
     aiDecision: "MATCH",
     aiConfidence: 96,
@@ -81,6 +84,7 @@ const defaultRecords: ReconciliationRecord[] = [
     status: "Human Review",
     confidence: 62,
     timestamp: "2026-08-05 03:15",
+    exceptionCategory: "Ambiguous Match",
     aiExplanation: "Two candidate settlements (SET-000481 @ 91.2% and SET-000482 @ 90.8%) have close scores. Evidence is insufficient to choose.",
     aiDecision: "HUMAN_REVIEW",
     aiConfidence: 62,
@@ -99,10 +103,11 @@ const defaultRecords: ReconciliationRecord[] = [
     status: "Matched",
     confidence: 94,
     timestamp: "2026-08-05 04:30",
-    aiExplanation: "Fuzzy reference stem matched in Pass 2 candidate scoring.",
+    exceptionCategory: "—",
     aiDecision: "MATCH",
+    aiExplanation: "Fuzzy candidate match (94% similarity) accepted in Pass 2 fuzzy matcher.",
     aiConfidence: 94,
-    recommendedAction: "Approve match.",
+    recommendedAction: "Accept automatic match.",
   },
   {
     orderId: "ORD-000005",
@@ -113,10 +118,15 @@ const defaultRecords: ReconciliationRecord[] = [
     status: "Mismatch",
     confidence: 42,
     timestamp: "2026-08-05 05:00",
-    aiExplanation: "Discrepancy: Settled ₹6,000.00 but expected net ₹9,750.00. Genuine amount mismatch.",
-    aiDecision: "EXCEPTION",
-    aiConfidence: 92,
-    recommendedAction: "Raise dispute with payment gateway partner.",
+    exceptionCategory: "Amount Mismatch",
+    aiExplanation: "Settlement amount ₹6,000 is far outside allowable MDR fee variance for gross amount ₹9,999.",
+    aiDecision: "HUMAN_REVIEW",
+    aiConfidence: 42,
+    recommendedAction: "Escalate to gateway provider support for partial settlement reconciliation.",
+    evidenceUsed: [
+      "Expected net: ₹9,749.00",
+      "Actual settlement: ₹6,000.00 (Variance: -₹3,749.00)",
+    ],
   },
   {
     orderId: "ORD-000006",
@@ -127,6 +137,7 @@ const defaultRecords: ReconciliationRecord[] = [
     status: "Missing",
     confidence: 0,
     timestamp: "2026-08-05 06:12",
+    exceptionCategory: "Missing Settlement",
     aiExplanation: "No settlement record exists in payout statement for order ORD-000006.",
     aiDecision: "HUMAN_REVIEW",
     aiConfidence: 40,
@@ -141,6 +152,8 @@ const defaultRecords: ReconciliationRecord[] = [
     status: "Matched",
     confidence: 98,
     timestamp: "2026-08-05 07:22",
+    exceptionCategory: "—",
+    aiDecision: "MATCH",
   },
   {
     orderId: "ORD-000008",
@@ -151,6 +164,8 @@ const defaultRecords: ReconciliationRecord[] = [
     status: "Matched",
     confidence: 100,
     timestamp: "2026-08-05 08:05",
+    exceptionCategory: "—",
+    aiDecision: "MATCH",
   },
 ];
 
@@ -230,12 +245,14 @@ export const ReconciliationTable: React.FC = () => {
                 <th className="py-2.5 px-4 font-medium">Match Method</th>
                 <th className="py-2.5 px-4 font-medium">Status</th>
                 <th className="py-2.5 px-4 text-right font-mono font-medium">Confidence</th>
+                <th className="py-2.5 px-4 font-medium">Exception</th>
+                <th className="py-2.5 px-4 font-medium">AI Decision</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredRecords.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-6">
+                  <td colSpan={8} className="py-6">
                     <EmptyState
                       title="No reconciliation records found"
                       description="Try adjusting your filter criteria or search query to find matching ledger entries."
@@ -264,10 +281,10 @@ export const ReconciliationTable: React.FC = () => {
                     >
                       {/* Order ID & Reference */}
                       <td className="py-2.5 px-4 font-mono">
-                        <div className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors leading-tight flex items-center space-x-1.5">
+                        <div className="font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors leading-tight flex items-center space-x-1.5">
                           <span>{record.orderId}</span>
                           {record.matchMethod === "AI Assisted" && (
-                            <Sparkles className="w-3 h-3 text-indigo-500 shrink-0" />
+                            <Sparkles className="w-3 h-3 text-purple-600 shrink-0" />
                           )}
                         </div>
                         <div className="text-[10px] text-slate-400 font-sans leading-tight mt-0.5">
@@ -298,9 +315,9 @@ export const ReconciliationTable: React.FC = () => {
                             className={cn(
                               "inline-block px-1.5 py-0.5 text-[10px] font-mono rounded border",
                               record.matchMethod === "AI Assisted"
-                                ? "text-indigo-700 bg-indigo-50 border-indigo-200 font-semibold"
+                                ? "text-purple-700 bg-purple-50 border-purple-200 font-semibold"
                                 : record.matchMethod.startsWith("Fuzzy")
-                                ? "text-slate-700 bg-slate-100 border-slate-200"
+                                ? "text-blue-700 bg-blue-50 border-blue-200"
                                 : "text-slate-600 bg-slate-100/90 border-slate-200"
                             )}
                           >
@@ -347,6 +364,36 @@ export const ReconciliationTable: React.FC = () => {
                         >
                           {record.confidence}%
                         </span>
+                      </td>
+
+                      {/* Exception Category */}
+                      <td className="py-2.5 px-4">
+                        {record.exceptionCategory && record.exceptionCategory !== "—" ? (
+                          <span className="text-[11px] font-medium text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded">
+                            {record.exceptionCategory}
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 font-mono text-[11px]">—</span>
+                        )}
+                      </td>
+
+                      {/* AI Decision */}
+                      <td className="py-2.5 px-4">
+                        {record.aiDecision === "MATCH" ? (
+                          <span className="text-[10px] font-mono font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
+                            MATCH
+                          </span>
+                        ) : record.aiDecision === "HUMAN_REVIEW" ? (
+                          <span className="text-[10px] font-mono font-medium text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">
+                            REVIEW
+                          </span>
+                        ) : record.aiDecision === "EXCEPTION" ? (
+                          <span className="text-[10px] font-mono font-medium text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded">
+                            EXCEPTION
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 font-mono text-[11px]">—</span>
+                        )}
                       </td>
                     </tr>
                   );

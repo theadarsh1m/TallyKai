@@ -14,6 +14,7 @@ const tabTitleMap: Record<string, string> = {
   overview: "Overview",
   reconciliation: "Reconciliation",
   exceptions: "Exceptions",
+  analytics: "Analytics & Metrics",
   "data-sources": "Data Sources",
   "audit-log": "Audit Log",
   settings: "Settings",
@@ -41,7 +42,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
         <div className="flex items-center space-x-2">
           <span className="font-bold text-slate-900 text-xs tracking-tight lg:hidden">
-            TARI
+            TallyKai
           </span>
           <span className="text-slate-300 text-xs lg:hidden">/</span>
           <h1 className="text-xs font-semibold text-slate-900">

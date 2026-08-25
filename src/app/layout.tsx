@@ -13,11 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TARI — AI Finance Controller",
+  title: "TallyKai — AI Finance Controller",
   description:
     "High-precision AI financial reconciliation engine designed to normalize, match, and resolve multi-source transaction ledgers.",
   keywords: [
-    "TARI",
+    "TallyKai",
     "Razorpay AI Buildathon 2026",
     "Finance Controller",
     "Financial Reconciliation",

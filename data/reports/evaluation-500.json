@@ -1,0 +1,261 @@
+{
+  "dataset": {
+    "totalOrders": 500,
+    "totalSettlements": 512,
+    "totalGroundTruth": 512,
+    "financialValueINR": 2712700,
+    "seed": 42
+  },
+  "metrics": {
+    "totalRecords": 512,
+    "matchableRecords": 423,
+    "exceptionRecords": 89,
+    "correctMatches": 378,
+    "incorrectMatches": 0,
+    "unresolvedRecords": 134,
+    "exceptionsIdentified": 89,
+    "accuracy": 91.21,
+    "precision": 100,
+    "recall": 89.36,
+    "f1Score": 94.38,
+    "resolutionRate": 73.83,
+    "exceptionRate": 26.17
+  },
+  "confusionMatrix": {
+    "truePositives": 378,
+    "falsePositives": 0,
+    "trueNegatives": 89,
+    "falseNegatives": 45,
+    "totalRecords": 512
+  },
+  "layerPerformance": [
+    {
+      "layer": "DETERMINISTIC",
+      "resolvedCount": 369,
+      "cumulativeResolved": 369,
+      "percentageOfTotal": 72.1,
+      "precision": 100,
+      "falsePositives": 0,
+      "correctMatches": 369,
+      "incorrectMatches": 0
+    },
+    {
+      "layer": "FUZZY",
+      "resolvedCount": 9,
+      "cumulativeResolved": 378,
+      "percentageOfTotal": 1.8,
+      "precision": 100,
+      "falsePositives": 0,
+      "correctMatches": 9,
+      "incorrectMatches": 0
+    },
+    {
+      "layer": "AI",
+      "resolvedCount": 0,
+      "cumulativeResolved": 378,
+      "percentageOfTotal": 0,
+      "precision": 100,
+      "falsePositives": 0,
+      "correctMatches": 0,
+      "incorrectMatches": 0
+    },
+    {
+      "layer": "HUMAN_REVIEW",
+      "resolvedCount": 134,
+      "cumulativeResolved": 378,
+      "percentageOfTotal": 26.2,
+      "precision": 100,
+      "falsePositives": 0,
+      "correctMatches": 0,
+      "incorrectMatches": 0
+    }
+  ],
+  "resolutionFunnel": [
+    {
+      "stage": "Pass 1: Deterministic Engine",
+      "inputCount": 512,
+      "resolvedCount": 369,
+      "unresolvedRemaining": 143,
+      "conversionRate": 72.1
+    },
+    {
+      "stage": "Pass 2: Fuzzy Similarity Matching",
+      "inputCount": 143,
+      "resolvedCount": 9,
+      "unresolvedRemaining": 134,
+      "conversionRate": 6.3
+    },
+    {
+      "stage": "Pass 3: AI Exception Investigator",
+      "inputCount": 134,
+      "resolvedCount": 0,
+      "unresolvedRemaining": 134,
+      "conversionRate": 0
+    },
+    {
+      "stage": "Human Review / Escalations",
+      "inputCount": 134,
+      "resolvedCount": 0,
+      "unresolvedRemaining": 134,
+      "conversionRate": 0
+    }
+  ],
+  "exceptions": [
+    {
+      "category": "AMBIGUOUS_MATCH",
+      "count": 63,
+      "percentageOfExceptions": 47,
+      "sampleOrderIds": [
+        "ORD-000030",
+        "ORD-000052",
+        "ORD-000061",
+        "ORD-000074",
+        "ORD-000102"
+      ],
+      "primaryReason": "Multiple candidate settlements scored within the ambiguity tolerance threshold"
+    },
+    {
+      "category": "AMOUNT_MISMATCH",
+      "count": 35,
+      "percentageOfExceptions": 26.1,
+      "sampleOrderIds": [
+        "ORD-000017",
+        "ORD-000033",
+        "ORD-000051",
+        "ORD-000060",
+        "ORD-000067"
+      ],
+      "primaryReason": "Discrepancy between gross order price and net payout after fee tolerance"
+    },
+    {
+      "category": "DUPLICATE_SETTLEMENT",
+      "count": 14,
+      "percentageOfExceptions": 10.4,
+      "sampleOrderIds": [
+        "ORD-000099",
+        "ORD-000115",
+        "ORD-000134",
+        "ORD-000136",
+        "ORD-000138"
+      ],
+      "primaryReason": "Order matched against multiple distinct settlement batch transactions"
+    },
+    {
+      "category": "UNKNOWN",
+      "count": 12,
+      "percentageOfExceptions": 9,
+      "sampleOrderIds": [
+        "ORPHAN",
+        "ORPHAN",
+        "ORPHAN",
+        "ORPHAN",
+        "ORPHAN"
+      ],
+      "primaryReason": "Uncategorized discrepancy requiring manual finance audit"
+    },
+    {
+      "category": "FUZZY_LOW_CONFIDENCE",
+      "count": 6,
+      "percentageOfExceptions": 4.5,
+      "sampleOrderIds": [
+        "ORD-000016",
+        "ORD-000053",
+        "ORD-000064",
+        "ORD-000156",
+        "ORD-000161"
+      ],
+      "primaryReason": "Highest fuzzy candidate score fell below the 0.85 acceptance threshold"
+    },
+    {
+      "category": "MISSING_SETTLEMENT",
+      "count": 4,
+      "percentageOfExceptions": 3,
+      "sampleOrderIds": [
+        "ORD-000018",
+        "ORD-000062",
+        "ORD-000176",
+        "ORD-000193"
+      ],
+      "primaryReason": "Order marked paid internally but absent from gateway settlement feed"
+    }
+  ],
+  "falsePositives": [],
+  "confidenceBuckets": [
+    {
+      "rangeLabel": "0.90–1.00",
+      "minScore": 0.9,
+      "maxScore": 1,
+      "totalCases": 431,
+      "correctPredictions": 415,
+      "incorrectPredictions": 16,
+      "accuracy": 96.3
+    },
+    {
+      "rangeLabel": "0.80–0.89",
+      "minScore": 0.8,
+      "maxScore": 0.8999,
+      "totalCases": 0,
+      "correctPredictions": 0,
+      "incorrectPredictions": 0,
+      "accuracy": 100
+    },
+    {
+      "rangeLabel": "0.70–0.79",
+      "minScore": 0.7,
+      "maxScore": 0.7999,
+      "totalCases": 0,
+      "correctPredictions": 0,
+      "incorrectPredictions": 0,
+      "accuracy": 100
+    },
+    {
+      "rangeLabel": "<0.70",
+      "minScore": 0,
+      "maxScore": 0.6999,
+      "totalCases": 81,
+      "correctPredictions": 52,
+      "incorrectPredictions": 29,
+      "accuracy": 64.2
+    }
+  ],
+  "financialMetrics": {
+    "totalOrderValuePaise": 274079300,
+    "reconciledOrderValuePaise": 208532200,
+    "unresolvedOrderValuePaise": 65547100,
+    "incorrectlyReconciledValuePaise": 0,
+    "exceptionOrderValuePaise": 65547100,
+    "totalOrderValueINR": 2740793,
+    "reconciledOrderValueINR": 2085322,
+    "unresolvedOrderValueINR": 655471,
+    "incorrectlyReconciledValueINR": 0,
+    "exceptionOrderValueINR": 655471,
+    "financialReconciliationRate": 76.08
+  },
+  "performance": {
+    "totalProcessingTimeMs": 229.67,
+    "normalizationTimeMs": 25.02,
+    "recordsPerSecond": 2229.3,
+    "averageTimePerRecordMs": 0.449
+  },
+  "aiMetrics": {
+    "investigations": 73,
+    "resolved": 0,
+    "humanReviewDecisions": 73,
+    "failures": 0,
+    "resolutionRate": 0,
+    "fallbackRate": 100,
+    "precision": 100,
+    "falsePositiveCount": 0,
+    "averageConfidence": 0.627,
+    "callsPer1000Records": 142.6
+  },
+  "dataQuality": {
+    "recordsGenerated": 1012,
+    "recordsNormalized": 1012,
+    "invalidRecords": 0,
+    "missingFieldsCount": 0,
+    "duplicateSourceRecords": 0,
+    "dataQualityScore": 100
+  },
+  "evaluatedAt": "2026-08-25T08:59:21.900Z"
+}
