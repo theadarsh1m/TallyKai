@@ -1,0 +1,157 @@
+// TallyKai — Prisma Schema for Neon PostgreSQL
+// Financial-Grade Reconciliation Ledger & Audit System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Canonical Order Ledger
+model Order {
+  id                   String                @id @default(cuid())
+  orderId              String                @unique
+  sourceRecordId       String
+  transactionReference String?
+  customerId           String?
+  amountMinor          BigInt
+  currency             String                @default("INR")
+  timestamp            DateTime
+  status               String
+  paymentMethod        String?
+  feeMinor             BigInt?
+  taxMinor             BigInt?
+  refundAmountMinor    BigInt                @default(0)
+  metadata             Json                  @default("{}")
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+
+  reconciliationResult ReconciliationResult?
+
+  @@index([transactionReference])
+  @@index([customerId])
+  @@index([status])
+  @@index([timestamp])
+  @@map("orders")
+}
+
+/// Gateway Settlement Feed
+model Settlement {
+  id                   String   @id @default(cuid())
+  settlementId         String   @unique
+  sourceRecordId       String
+  orderId              String?
+  transactionReference String?
+  customerId           String?
+  amountMinor          BigInt
+  currency             String   @default("INR")
+  timestamp            DateTime
+  status               String
+  paymentMethod        String?
+  feeMinor             BigInt?
+  taxMinor             BigInt?
+  refundAmountMinor    BigInt   @default(0)
+  metadata             Json     @default("{}")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([transactionReference])
+  @@index([customerId])
+  @@index([status])
+  @@index([timestamp])
+  @@map("settlements")
+}
+
+/// Multi-Pass Reconciliation Result
+model ReconciliationResult {
+  id                    String            @id @default(cuid())
+  orderId               String            @unique
+  order                 Order             @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
+  status                String
+  matchMethod           String
+  settlementIds         String[]
+  confidence            Float
+  amountDifferenceMinor BigInt            @default(0)
+  reason                String
+  exceptionCategory     String?
+  evidence              Json
+  fuzzyCandidates       Json?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  aiInvestigation       AIInvestigation?
+
+  @@index([status])
+  @@index([exceptionCategory])
+  @@index([matchMethod])
+  @@map("reconciliation_results")
+}
+
+/// AI Finance Controller Exception Investigation
+model AIInvestigation {
+  id                       String               @id @default(cuid())
+  investigationId          String               @unique
+  orderId                  String               @unique
+  reconciliationResult     ReconciliationResult @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
+  decision                 String
+  recommendedSettlementIds String[]
+  exceptionType            String
+  confidence               Float
+  reasoningSummary         String
+  evidenceUsed             String[]
+  unresolvedQuestions      String[]
+  recommendedAction        String
+  model                    String
+  durationMs               Float
+  auditEvents              Json
+  createdAt                DateTime             @default(now())
+
+  @@index([decision])
+  @@index([exceptionType])
+  @@map("ai_investigations")
+}
+
+/// Immutable System Audit Trail
+model AuditEvent {
+  id         String   @id @default(cuid())
+  timestamp  DateTime @default(now())
+  action     String
+  entityType String?
+  entityId   String?
+  details    String?
+  metadata   Json?
+
+  @@index([action])
+  @@index([entityId])
+  @@index([timestamp])
+  @@map("audit_events")
+}
+
+/// Reconciliation Run Summary & Benchmarks
+model ReconciliationSummaryReport {
+  id                          String   @id @default(cuid())
+  runId                       String   @unique
+  totalOrders                 Int
+  totalSettlements            Int
+  matched                     Int
+  matchedAfterAdjustments     Int
+  missingSettlements          Int
+  partialSettlements          Int
+  duplicates                  Int
+  orphanSettlements           Int
+  unresolved                  Int
+  exceptions                  Int
+  totalMatched                Int
+  deterministicResolutionRate Float
+  fuzzyResolutionRate         Float?
+  aiResolutionRate            Float?
+  processingTimeMs            Float
+  metadata                    Json?
+  createdAt                   DateTime @default(now())
+
+  @@map("reconciliation_summary_reports")
+}

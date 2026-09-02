@@ -10,9 +10,11 @@ import { AIInvestigationContext, AIProvider, AIProviderConfig } from "./types";
 import { fromMinorUnits } from "../normalization/money";
 
 export const DEFAULT_AI_CONFIG: AIProviderConfig = {
-  provider: (process.env.AI_PROVIDER as AIProviderConfig["provider"]) || "mock",
+  provider:
+    (process.env.AI_PROVIDER as AIProviderConfig["provider"]) ||
+    (process.env.AI_API_KEY || process.env.GEMINI_API_KEY ? "gemini" : "mock"),
   apiKey: process.env.AI_API_KEY || process.env.GEMINI_API_KEY || "",
-  modelName: process.env.AI_MODEL_NAME || "gemini-2.5-flash",
+  modelName: process.env.AI_MODEL_NAME || "gemini-2.5-flash-lite",
   maxTokens: parseInt(process.env.AI_MAX_TOKENS || "2048", 10),
   temperature: 0.0, // Strict zero temperature for financial determinism
   timeoutMs: 15000,
